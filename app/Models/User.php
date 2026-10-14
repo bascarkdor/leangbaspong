@@ -58,4 +58,28 @@ class User extends Authenticatable
     {
         return $this->belongsTo(Role::class);
     }
+
+    /**
+     * Determine if the user is an administrator.
+     */
+    public function isAdmin(): bool
+    {
+        return $this->role?->role_name === 'Administrator';
+    }
+
+    /**
+     * Determine if the user is a student (read-only).
+     */
+    public function isStudent(): bool
+    {
+        return $this->role?->role_name === 'Student';
+    }
+
+    /**
+     * Determine if the user has management permissions (Create, Edit, Delete).
+     */
+    public function canManage(): bool
+    {
+        return $this->isAdmin();
+    }
 }

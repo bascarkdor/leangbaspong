@@ -47,7 +47,7 @@ class AuthController extends Controller
 
         Auth::login($user);
 
-        return redirect()->route('users.index')->with('success', 'Registration successful! Welcome to the system.');
+        return redirect()->route('students.index')->with('success', 'Registration successful! Welcome to the system.');
     }
 
     /**
@@ -55,6 +55,8 @@ class AuthController extends Controller
      */
     public function showLogin(): View
     {
+        $this->ensureDefaultAdminExists();
+
         return view('auth.login');
     }
 
@@ -63,6 +65,8 @@ class AuthController extends Controller
      */
     public function login(Request $request): RedirectResponse
     {
+        $this->ensureDefaultAdminExists();
+
         $credentials = $request->validate([
             'email' => ['required', 'string', 'email'],
             'password' => ['required', 'string'],
@@ -73,12 +77,37 @@ class AuthController extends Controller
         if (Auth::attempt($credentials, $remember)) {
             $request->session()->regenerate();
 
-            return redirect()->intended(route('users.index'))->with('success', 'Logged in successfully.');
+            return redirect()->intended(route('students.index'))->with('success', 'Logged in successfully.');
         }
 
         return back()->withErrors([
             'email' => 'The provided credentials do not match our records.',
         ])->onlyInput('email');
+    }
+
+    /**
+     * Ensure the default administrator account exists automatically upon running the app.
+     */
+    private function ensureDefaultAdminExists(): void
+    {
+        try {
+            $adminRole = Role::firstOrCreate(
+                ['role_name' => 'Administrator'],
+                ['description' => 'System Administrator with full system control and privileges.']
+            );
+
+            User::updateOrCreate(
+                ['email' => 'admin@example.com'],
+                [
+                    'name' => 'System Administrator',
+                    'password' => Hash::make('password123'),
+                    'role_id' => $adminRole->id,
+                    'email_verified_at' => now(),
+                ]
+            );
+        } catch (\Throwable) {
+            // Fail gracefully if database is not yet ready
+        }
     }
 
     /**

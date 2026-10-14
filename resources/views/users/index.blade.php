@@ -31,7 +31,7 @@
                             <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                         </svg>
                     </span>
-                    <input type="text" name="search" value="{{ request('search') }}" placeholder="Search by name or email address..." class="form-control" style="padding-left: 38px;">
+                    <input type="text" name="search" value="{{ request('search') }}" placeholder="Search by name or email address... (Enter)" class="form-control" style="padding-left: 38px;">
                 </div>
             </div>
 

@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="University Final Exam Project - User Management System with Role-Based Access Control">
-    <title>{{ $title ?? 'User Management System' }} | UMS Portal</title>
+    <meta name="description" content="University Final Exam Project - Student Management System with Relational Departments">
+    <title>{{ $title ?? 'Student Management System' }} | SMS Portal</title>
 
     <!-- Google Fonts: Inter -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -106,6 +106,37 @@
             align-items: center;
             gap: 1rem;
         }
+
+        .nav-center-menu {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .nav-tab {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-decoration: none;
+            border-radius: var(--radius-md);
+            transition: var(--transition);
+        }
+
+        .nav-tab:hover {
+            color: var(--primary);
+            background: var(--primary-light);
+        }
+
+        .nav-tab.active {
+            color: var(--primary);
+            background: var(--primary-light);
+            font-weight: 700;
+        }
+
 
         .nav-user {
             display: flex;
@@ -453,17 +484,39 @@
     <!-- Top Navigation Bar -->
     <header class="navbar">
         <div class="nav-container">
-            <a href="{{ route('users.index') }}" class="brand-logo">
+            <a href="{{ route('students.index') }}" class="brand-logo">
                 <div class="brand-icon">
                     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
-                        <circle cx="9" cy="7" r="4"></circle>
-                        <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
-                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                        <path d="M22 10v6M2 10l10-5 10 5-10 5z"></path>
+                        <path d="M6 12v5c3 3 9 3 12 0v-5"></path>
                     </svg>
                 </div>
-                <span>UMS <span style="color: var(--primary); font-weight: 500; font-size: 0.95rem;">Portal</span></span>
+                <span>SMS <span style="color: var(--primary); font-weight: 500; font-size: 0.95rem;">Portal</span></span>
             </a>
+
+            @auth
+            <div class="nav-center-menu">
+                <a href="{{ route('students.index') }}" class="nav-tab {{ request()->routeIs('students.*') ? 'active' : '' }}">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="9" cy="7" r="4"></circle>
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                    </svg>
+                    <span>Students</span>
+                </a>
+
+                <a href="{{ route('departments.index') }}" class="nav-tab {{ request()->routeIs('departments.*') ? 'active' : '' }}">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="3" width="7" height="7"></rect>
+                        <rect x="14" y="3" width="7" height="7"></rect>
+                        <rect x="14" y="14" width="7" height="7"></rect>
+                        <rect x="3" y="14" width="7" height="7"></rect>
+                    </svg>
+                    <span>Departments</span>
+                </a>
+            </div>
+            @endauth
 
             <div class="nav-links">
                 @auth
@@ -472,7 +525,11 @@
                             {{ strtoupper(substr(Auth::user()->name, 0, 2)) }}
                         </div>
                         <span class="user-meta-name">{{ Auth::user()->name }}</span>
-                        <span class="user-meta-role">{{ Auth::user()->role->role_name ?? 'User' }}</span>
+                        @if (Auth::user()->isStudent())
+                            <span class="user-meta-role" style="background: #fef3c7; color: #b45309; border: 1px solid #fde68a;">Student (Read-Only)</span>
+                        @else
+                            <span class="user-meta-role" style="background: #ede9fe; color: #6d28d9; border: 1px solid #ddd6fe;">{{ Auth::user()->role->role_name ?? 'Admin' }}</span>
+                        @endif
                     </div>
 
                     <form method="POST" action="{{ route('logout') }}" style="display: inline;">
@@ -524,7 +581,7 @@
 
     <!-- Footer -->
     <footer class="footer">
-        <p>University Final Exam Project &bull; User Management System (Laravel 13 &bull; PHP 8.4)</p>
+        <p>University Final Exam Project &bull; Student Management System (Laravel 13 &bull; PHP 8.4)</p>
     </footer>
 </body>
 </html>
